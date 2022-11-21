@@ -36,7 +36,7 @@ function App() {
 
 
   //escolhendo categoria aleatoria
-  const pickWordAndCategory = () => {
+  const pickWordAndCategory = useCallback(() => {
     const categories = Object.keys(words)
     const category = 
     categories[Math.floor(Math.random() * Object.keys(categories).length)]
@@ -50,10 +50,11 @@ function App() {
   console.log(word)
 
   return{word, category}
-  }
+  },[words]);
 
  // Start no Game 
-  const startGame = () => {
+  const startGame = useCallback(() => {
+    clearLetterStates();
     // escolher palavra e escoler categoria
     const {word, category} = pickWordAndCategory();
 
@@ -74,7 +75,7 @@ function App() {
 
 
     setGameStage(stages[1].name);
-  };
+  }, [pickWordAndCategory]);
 
 // Process the letter input
 const verifyLetter = (letter) => {
@@ -117,6 +118,19 @@ const clearLetterStates = () => {
     }
 
   }, [guesses]);
+
+
+
+  useEffect(() => {
+    const uniqueLetters = [...new Set(letters)];
+
+      if(guessedLetters.length === uniqueLetters.length) {
+      
+      setScore((actualScore) => actualScore += 100)
+      
+      startGame();
+    }
+  }, [guessedLetters, letters, startGame])
 
 
 // restart the game
